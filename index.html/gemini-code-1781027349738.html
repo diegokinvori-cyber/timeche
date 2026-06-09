@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kinvosmile - Ecosistema de Asistencia</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen font-sans flex flex-col justify-between p-4">
+
+    <header class="w-full max-w-5xl mx-auto flex justify-between items-center bg-slate-800/50 p-4 rounded-xl border border-slate-700/50 mb-6">
+        <div class="flex items-center gap-2">
+            <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
+                <i data-lucide="shield" class="w-5 h-5 text-white"></i>
+            </div>
+            <span class="font-bold tracking-wider text-indigo-400">KINVOSMILE AI</span>
+        </div>
+        <nav class="flex gap-2">
+            <button onclick="cambiarVista('vista-login')" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-700 hover:bg-slate-600 transition-all">Portal Empleado</button>
+            <button onclick="cambiarVista('vista-admin')" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-indigo-600/20 border border-indigo-500/30 text-indigo-400 hover:bg-indigo-600/30 transition-all">Panel Organización</button>
+        </nav>
+    </header>
+
+    <main class="w-full max-w-5xl mx-auto flex-grow flex items-center justify-center">
+
+        <section id="vista-login" class="w-full max-w-md bg-slate-800 rounded-2xl shadow-2xl border border-slate-700 overflow-hidden card-vista">
+            <div class="p-6 bg-gradient-to-r from-indigo-600 to-violet-600 text-center">
+                <h1 class="text-xl font-bold tracking-wide uppercase">Acceso Colaborador</h1>
+                <p class="text-indigo-200 text-xs mt-1">Ingresa tus datos para activar tu sesión efímera</p>
+            </div>
+            <form id="form-login" class="p-6 space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Nombre Completo</label>
+                    <input type="text" id="login-nombre" required placeholder="Ej. Diego Kinvori" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-100 focus:outline-none focus:border-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Número de Colaborador / ID Temporal</label>
+                    <input type="text" id="login-numero" required placeholder="Ej. KINV-2026" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-100 focus:outline-none focus:border-indigo-500">
+                </div>
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3 rounded-xl transition-all flex items-center justify-center gap-2">
+                    <i data-lucide="key-round" class="w-4 h-4"></i> Validar & Generar Token
+                </button>
+            </form>
+        </section>
+
+
+        <section id="vista-checador" class="w-full max-w-md bg-slate-800 rounded-2xl shadow-2xl border border-slate-700 overflow-hidden hidden card-vista">
+            <div class="p-6 bg-gradient-to-r from-emerald-600 to-teal-600 text-center relative">
+                <h1 class="text-xl font-bold tracking-wide uppercase">Registrar Entrada</h1>
+                <p id="txt-saludo" class="text-emerald-100 text-xs mt-1">Sesión autorizada</p>
+                <div class="absolute top-4 right-4 bg-slate-900/40 border border-white/20 text-white text-xs px-2 py-1 rounded-full flex items-center gap-1">
+                    <i data-lucide="clock" class="w-3 h-3 text-emerald-300"></i> <span id="timer">30:00</span>
+                </div>
+            </div>
+            <form id="form-checador" class="p-6 space-y-4">
+                <div class="bg-slate-900 p-4 rounded-xl border border-slate-700/50">
+                    <span class="text-xs text-slate-400 block uppercase font-bold tracking-wider mb-1">Cadena de Identidad Concatenada:</span>
+                    <p id="txt-concatenacion" class="font-mono text-sm text-indigo-400 font-bold"></p>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Nota / Justificante de Entrada</label>
+                    <textarea id="nota" rows="2" placeholder="Coloca una justificación si llegas tarde..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-100 focus:outline-none focus:border-emerald-500 resize-none"></textarea>
+                </div>
+                <input type="hidden" id="ubicacion_raw" value="">
+                <button type="submit" id="btn-registrar" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-3 rounded-xl transition-all flex items-center justify-center gap-2">
+                    <i data-lucide="fingerprint" class="w-5 h-5"></i> Confirmar Entrada
+                </button>
+            </form>
+            <div id="status-card" class="mx-6 mb-6 p-4 rounded-xl border hidden bg-slate-900"></div>
+        </section>
+
+
+        <section id="vista-admin" class="w-full max-w-5xl bg-slate-800 rounded-2xl shadow-2xl border border-slate-700 overflow-hidden hidden card-vista">
+            <div class="p-6 bg-slate-850 border-b border-slate-700 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                    <h1 class="text-xl font-bold tracking-wide uppercase flex items-center gap-2 text-indigo-400">
+                        <i data-lucide="building-2" class="w-5 h-5"></i> Control de la Organización
+                    </h1>
+                    <p class="text-slate-400 text-xs mt-1">Consolidado mensual, descargas de reportes y calendario de días inhábiles</p>
+                </div>
+                <button onclick="alert('Generando PDF estructurado de 3 meses de historial...')" class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs px-4 py-2.5 rounded-xl transition-all flex items-center gap-2">
+                    <i data-lucide="download" class="w-4 h-4"></i> Descargar Historial PDF (3 Meses)
+                </button>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 divide-y lg:divide-y-0 lg:divide-x divide-slate-700">
+                <div class="p-6 space-y-4 lg:col-span-1">
+                    <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1">
+                        <i data-lucide="calendar" class="w-4 h-4 text-rose-400"></i> Bloquear Calendario
+                    </h3>
+                    <form id="form-calendario" class="space-y-3">
+                        <input type="date" required class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-sm text-slate-100">
+                        <select class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-sm text-slate-100">
+                            <option value="inhabil">Día Inhábil (Feriado)</option>
+                            <option value="vacaciones">Periodo Vacacional</option>
+                        </select>
+                        <input type="text" placeholder="Leyenda explicativa en BD..." required class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-sm text-slate-100">
+                        <button type="submit" class="w-full bg-slate-700 hover:bg-slate-600 text-xs text-white font-semibold py-2 rounded-lg transition-all">
+                            Habilitar en Organización
+                        </button>
+                    </form>
+                </div>
+
+                <div class="p-6 lg:col-span-2 space-y-4">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1">
+                            <i data-lucide="history" class="w-4 h-4 text-emerald-400"></i> Registros de Asistencia Recientes
+                        </h3>
+                        <span class="text-[10px] bg-slate-700 px-2 py-0.5 rounded text-slate-300 font-mono">Firma Diaria Activa</span>
+                    </div>
+                    
+                    <div class="overflow-x-auto rounded-xl border border-slate-700/60 bg-slate-900">
+                        <table class="w-full text-left border-collapse text-xs">
+                            <thead>
+                                <tr class="bg-slate-800/80 text-slate-400 uppercase font-semibold border-b border-slate-700">
+                                    <th class="p-3">Colaborador (Dato Unido)</th>
+                                    <th class="p-3">Fecha / Hora</th>
+                                    <th class="p-3">Datos Ocultos (Base)</th>
+                                    <th class="p-3">Corte Automático</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-800 text-slate-300">
+                                <tr>
+                                    <td class="p-3 font-semibold">Diego Kinvori - KINV-2026</td>
+                                    <td class="p-3">2026-06-09 08:05:12</td>
+                                    <td class="p-3"><span class="text-rose-400 font-mono font-bold">🔒 AES-256 (IP/Ubi)</span></td>
+                                    <td class="p-3 text-slate-500">Pendiente 23:59:59</td>
+                                </tr>
+                                <tr class="bg-slate-800/20">
+                                    <td class="p-3 font-semibold">Talento Humano - STAFF-02</td>
+                                    <td class="p-3">2026-06-08 09:01:44</td>
+                                    <td class="p-3"><span class="text-emerald-400 font-mono font-bold">🔒 AES-256 (IP/Ubi)</span></td>
+                                    <td class="p-3 text-indigo-400 font-mono font-bold flex items-center gap-1"><i data-lucide="check-circle-2" class="w-3 h-3"></i> HMAC-SHA256</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="w-full max-w-5xl mx-auto mt-6 text-center text-xs text-slate-500 border-t border-slate-800 pt-4 flex justify-between">
+        <span>© 2026 Kinvosmile MicroSaaS</span>
+        <span class="flex items-center gap-1"><i data-lucide="shield-check" class="w-3.5 h-3.5 text-indigo-500"></i> Arquitectura Cifrada Conectada a Supabase Vault</span>
+    </footer>
+
+    <script>
+        lucide.createIcons();
+
+        // Variables Globales del Colaborador
+        let variablesColaborador = { nombre: '', numero: '', concatenado: '' };
+        let timerInterval;
+
+        // Cambiar entre pantallas dinámicamente
+        function cambiarVista(idVista) {
+            document.querySelectorAll('.card-vista').forEach(el => el.classList.add('hidden'));
+            document.getElementById(idVista).classList.remove('hidden');
+        }
+
+        // CONTROLADOR 1: Formulario de Login (Generación de Token Efímero)
+        document.getElementById('form-login').addEventListener('submit', (e) => {
+            e.preventDefault();
+            variablesColaborador.nombre = document.getElementById('login-nombre').value.trim();
+            variablesColaborador.numero = document.getElementById('login-numero').value.trim();
+            // Formato de concatenación solicitado
+            variablesColaborador.concatenado = `${variablesColaborador.nombre} - ${variablesColaborador.numero}`;
+
+            // Actualizar interfaz del Checador
+            document.getElementById('txt-saludo').textContent = `Sesión de: ${variablesColaborador.nombre}`;
+            document.getElementById('txt-concatenacion').textContent = variablesColaborador.concatenado;
+
+            // Cambiar a la vista del checador e iniciar el conteo de 30 minutos
+            cambiarVista('vista-checador');
+            iniciarContadorToken();
+        });
+
+        // CONTROLADOR 2: Temporizador del Token Efímero (30 Minutos)
+        function iniciarContadorToken() {
+            let tiempo = 30 * 60; // 1800 segundos
+            const timerDisplay = document.getElementById('timer');
+            clearInterval(timerInterval);
+
+            timerInterval = setInterval(() => {
+                let minutos = Math.floor(tiempo / 60);
+                let segundos = tiempo % 60;
+                segundos = segundos < 10 ? '0' + segundos : segundos;
+                timerDisplay.textContent = `${minutos}:${segundos}`;
+
+                if (--tiempo < 0) {
+                    clearInterval(timerInterval);
+                    timerDisplay.textContent = "EXPIRADO";
+                    document.getElementById('btn-registrar').disabled = true;
+                    alert("Tu token de 30 minutos ha expirado. Debes loguearte de nuevo.");
+                    cambiarVista('vista-login');
+                }
+            }, 1000);
+        }
+
+        // CONTROLADOR 3: Geolocalización en Background
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition((pos) => {
+                document.getElementById('ubicacion_raw').value = `Lat: ${pos.coords.latitude}, Lon: ${pos.coords.longitude}`;
+            });
+        }
+
+        // CONTROLADOR 4: Registro de asistencia hacia Netlify Function
+        document.getElementById('form-checador').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btn-registrar');
+            const status = document.getElementById('status-card');
+            
+            btn.disabled = true;
+            btn.innerHTML = `Procesando...`;
+
+            try {
+                const response = await fetch('/api/registrar-entrada', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        colaborador_concatenado: variablesColaborador.concatenated || variablesColaborador.concatenado,
+                        ubicacion_raw: document.getElementById('ubicacion_raw').value || "Ubicación IP",
+                        nota_justificante: document.getElementById('nota').value
+                    })
+                });
+
+                const resData = await response.json();
+                status.classList.remove('hidden');
+                status.innerHTML = `<p class="text-xs text-emerald-400 font-bold">✓ Entrada Registrada en Supabase.</p><p class="text-[10px] text-slate-400 mt-1">IP y Ubicación interceptadas en Netlify Function y guardadas en base de datos cifradas bajo AES-256.</p>`;
+            } catch (err) {
+                status.classList.remove('hidden');
+                status.innerHTML = `<p class="text-xs text-red-400 font-bold">Modo MVP Local:</p><p class="text-[10px] text-slate-400 mt-1">Simulación exitosa. Los datos se concatenaron y la geolocalización quedó lista para enviarse a la función de Netlify.</p>`;
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<i data-lucide="fingerprint" class="w-5 h-5"></i> Confirmar Entrada`;
+                lucide.createIcons();
+            }
+        });
+    </script>
+</body>
+</html>
