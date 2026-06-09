@@ -1,0 +1,9 @@
+{
+  "name": "kinvosmile-checador",
+  "version": "1.0.0",
+  "description": "MVP Checador de Tiempos con Cifrado",
+  "main": "index.html",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.43.4"
+  }
+}
